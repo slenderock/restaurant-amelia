@@ -5,6 +5,7 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
+gem 'dotenv-rails', '~> 2.2', '>= 2.2.1'
 gem 'jbuilder', '~> 2.5'
 gem 'jquery-rails'
 gem 'kaminari-mongoid', '~> 1.0', '>= 1.0.1'
@@ -25,6 +26,14 @@ group :development do
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
   gem 'web-console', '>= 3.3.0'
+
+  # deploy
+
+  gem 'capistrano',         '3.6.1', require: false
+  gem 'capistrano-bundler', '1.2.0', require: false
+  gem 'capistrano-rails',   '1.2.0', require: false
+  gem 'capistrano-rvm',     '0.1.2', require: false
+  gem 'capistrano3-puma',   '1.2.1', require: false
 end
 
 gem 'tzinfo-data', platforms: %i(mingw mswin x64_mingw jruby)
