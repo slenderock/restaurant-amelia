@@ -1,0 +1,44 @@
+AllCops:
+  Exclude:
+    - 'vendor/**/*'
+    - 'tmp/**/*'
+    - 'db/**/*'
+    - 'vendor/**/*'
+    - 'bin/**/*'
+    - '**/script/**/*'
+    - 'config/initializers/*'
+
+Metrics/ModuleLength:
+  Exclude:
+    - "**/*_spec.rb"
+
+Metrics/BlockLength:
+  Exclude:
+    - "**/*_spec.rb"
+
+Documentation:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+Style/FileName:
+  Enabled: false
+
+Style/ModuleFunction:
+  Enabled: false
+
+Style/Encoding:
+  Enabled: false
+
+Documentation:
+  Enabled: false
+
+Metrics/MethodLength:
+  Enabled: false
+
+Metrics/LineLength:
+  Max: 105
