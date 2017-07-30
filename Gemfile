@@ -1,8 +1,20 @@
 source :rubygems
 
-gem 'rubocop'
+# main framework
 gem 'sinatra'
-gem 'slim'
-gem 'thin'
+
 gem 'foreman'
+gem 'slim'
+gem 'rubocop'
+gem 'thin'
+
+gem 'dotenv'
+
+# deploy
+gem 'capistrano'
+gem 'capistrano-bundler'
+gem 'capistrano-passenger'
+gem 'capistrano-rvm'
+
+# db
 # gem 'mongoid'

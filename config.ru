@@ -2,7 +2,10 @@
 
 require 'sinatra/base'
 require 'slim'
+require 'dotenv/load'
+
 # require 'mongoid'
+# Mongoid.load!('db/mongoid.yml', :production)
 
 class ApplicationController < Sinatra::Base
   set :views, File.expand_path('../views', __FILE__)
@@ -12,7 +15,6 @@ end
 
 Dir.glob('./{models,controllers}/*.rb').each { |file| require file }
 
-# Mongoid.load!('db/mongoid.yml', :production)
 
 map('/')      { run PublicController }
 map('/admin') { run ProtectedController }
