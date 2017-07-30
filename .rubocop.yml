@@ -1,21 +1,3 @@
-AllCops:
-  Exclude:
-    - 'vendor/**/*'
-    - 'tmp/**/*'
-    - 'db/**/*'
-    - 'vendor/**/*'
-    - 'bin/**/*'
-    - '**/script/**/*'
-    - 'config/initializers/*'
-
-Metrics/ModuleLength:
-  Exclude:
-    - "**/*_spec.rb"
-
-Metrics/BlockLength:
-  Exclude:
-    - "**/*_spec.rb"
-
 Documentation:
   Enabled: false
 
