@@ -1,0 +1,42 @@
+development:
+  clients:
+    default:
+      database: my_db
+      options:
+        write:
+          w: 1
+        read:
+          mode: :secondary_preferred
+          tag_sets:
+            - use: web
+        user: 'user'
+        password: 'password'
+        roles:
+          - 'dbOwner'
+        auth_mech: :scram
+        auth_source: admin
+        connect: :direct
+        heartbeat_frequency: 10
+        local_threshold: 0.015
+        server_selection_timeout: 30
+        max_pool_size: 5
+        min_pool_size: 1
+        wait_queue_timeout: 1
+        connect_timeout: 10
+        socket_timeout: 5
+        replica_set: my_replica_set
+        ssl: true
+        ssl_cert: /path/to/my.cert
+        ssl_key: /path/to/my.key
+        ssl_key_pass_phrase: password
+        ssl_verify: true
+        ssl_ca_cert: /path/to/ca.cert
+  options:
+    include_root_in_json: false
+    include_type_for_serialization: false
+    preload_models: false
+    raise_not_found_error: true
+    scope_overwrite_exception: false
+    use_activesupport_time_zone: true
+    use_utc: false
+    log_level: :info

@@ -1,0 +1,2 @@
+class Reserve
+end

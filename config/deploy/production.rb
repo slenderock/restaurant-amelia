@@ -1,2 +1,2 @@
-server '165.227.149.251', user: 'deploy', roles: %w(app db web)
-set :branch, :master
+server 'restaurant-amelia.ml', user: 'deploy', roles: %{web app}
+set :branch, :sinatra
