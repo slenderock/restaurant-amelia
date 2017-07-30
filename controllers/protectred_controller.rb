@@ -1,6 +1,6 @@
 class ProtectedController < ApplicationController
   use Rack::Auth::Basic, 'Protected Area' do |username, password|
-    username == 'foo' && password == 'bar'
+    username == ENV['ADMIN_USERNAME'] && password == ENV['ADMIN_PASSWORD']
   end
 
   get '/' do

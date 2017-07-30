@@ -4,8 +4,9 @@ source :rubygems
 gem 'sinatra'
 
 gem 'foreman'
-gem 'slim'
 gem 'rubocop'
+gem 'slim'
+gem 'telegram-bot-ruby'
 gem 'thin'
 
 gem 'dotenv'
