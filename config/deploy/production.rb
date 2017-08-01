@@ -1,2 +1,2 @@
-server '165.227.149.251', user: 'deploy', roles: %w(app db web)
+server '207.154.194.124', user: 'deploy', roles: %w(app db web)
 set :branch, :master

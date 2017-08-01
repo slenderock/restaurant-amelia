@@ -1,5 +1,5 @@
 # Change these
-server '165.227.149.251', roles: %i(web app db), primary: true
+server '207.154.194.124', roles: %i(web app db), primary: true
 
 set :repo_url,        'git@github.com:slenderock/restaurant-amelia.git'
 set :application,     'amelia'
