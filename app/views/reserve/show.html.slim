@@ -1,0 +1,24 @@
+.text-center
+  p
+    strong Заказ на имя:
+    = ": #{@client.name}"
+  p
+    strong Дата:
+    = ": #{@client.date}"
+  p
+    strong Время:
+    = ": #{@client.time}"
+  p
+    strong Количество гостей:
+    = ": #{@client.guests}"
+.text-right
+  = link_to 'Отменить заказ', '#'
+  br
+  = link_to 'Оставить отзыв', '#'
+.row.col-sm-6.text-center
+  strong О нас
+  /Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin dapibus egestas justo, vel congue elit auctor sed. Nulla in enim ut felis commodo placerat. Donec interdum venenatis nibh at tristique. Aenean non blandit diam. Nullam mollis nunc a justo auctor tempus. Cras feugiat eros id elit tempus lobortis. Cras commodo dui turpis, vestibulum ornare neque tincidunt sed. Nam diam leo, ornare ac dui sit amet, aliquet blandit dui.
+  /
+  /Phasellus blandit libero eget placerat ornare. Pellentesque bibendum tellus at eros mattis fringilla. Praesent nec ligula sit amet dolor iaculis semper. Nunc finibus pulvinar turpis, id congue elit suscipit aliquet. In sed consectetur nibh, eget malesuada velit. Cras a tempor ipsum. Interdum et malesuada fames ac ante ipsum primis in faucibus. Integer ultrices id nisi luctus posuere. Suspendisse sit amet erat semper, ultricies nulla vitae, tempus tellus. Sed nec dignissim nibh. Quisque ac est porta, consectetur ex id, efficitur ligula. Praesent tincidunt viverra diam vitae tristique. Aliquam erat volutpat. Nulla risus ex, mattis a sapien sit amet, egestas facilisis metus.
+.row.col-sm-6.text-center
+  strong Где нас найти

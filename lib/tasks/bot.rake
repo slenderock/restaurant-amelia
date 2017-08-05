@@ -23,7 +23,7 @@ namespace :bot do
           if disagree?(message.text)
             bot.api.send_message(
               chat_id: message.chat.id,
-              text: "Окей, пиши если передумаешь.А пока можешь посетить наш сайт #{Restaurant::DETAILS[:site]}"
+              text: "Окей, пиши если передумаешь. А пока можешь посетить наш сайт #{Restaurant::DETAILS[:site]}"
             )
             return
           end
@@ -34,7 +34,7 @@ namespace :bot do
           end
 
           if goodbye?(message.text)
-            bot.api.send_message(chat_id: message.chat.id, text: "Увидимся , #{message.from.first_name}")
+            bot.api.send_message(chat_id: message.chat.id, text: "Увидимся, #{message.from.first_name}")
             return
           end
 
@@ -48,19 +48,19 @@ namespace :bot do
         end
 
         def disagree?(message)
-          %w(Нет нет).include? message
+          %w(нет).include? message.downcase
         end
 
         def agree?(message)
-          %w(да Да).include? message
+          %w(да).include? message.downcase
         end
 
         def greetings?(message)
-          %w(Привет привет).include? message
+          %w(привет).include? message.downcase
         end
 
         def goodbye?(message)
-          %w(Пока пока Прощай прощай).include? message
+          %w(пока прощай).include? message.downcase
         end
       end
     end
