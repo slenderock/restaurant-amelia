@@ -1,7 +1,7 @@
 .reserve-info
   div
     strong Заказ на имя:
-    = " #{@resource.user.name}"
+    = " #{@resource.user.name if @resource.user.present?}"
   div
     strong Дата:
     = " #{@resource.date}"

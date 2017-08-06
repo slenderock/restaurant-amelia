@@ -6,7 +6,9 @@ namespace :bot do
     module TelegramBotService
       class << self
         def run
-          Telegram::Bot::Client.run(Restaurant::DETAILS[:api_token]) do |bot|
+          @restaurant ||= Restaurant.load
+
+          Telegram::Bot::Client.run(@restaurant.api_token) do |bot|
             bot.listen { |message| perform(bot, message) }
           end
         end
@@ -23,7 +25,7 @@ namespace :bot do
           if disagree?(message.text)
             bot.api.send_message(
               chat_id: message.chat.id,
-              text: "Окей, пиши если передумаешь. А пока можешь посетить наш сайт #{Restaurant::DETAILS[:site]}"
+              text: "Окей, пиши если передумаешь. А пока можешь посетить наш сайт #{ @restaurant.site }"
             )
             return
           end

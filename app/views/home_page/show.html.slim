@@ -1,12 +1,12 @@
 section.background
   .content-wrapper
-    p.content-title Restaurant "Amelia"
-    p.content-subtitle Scroll down and up to see the effect!
+    p.content-title = "Ресторан '#{ @restaurant.title }' "
+    p.content-subtitle прокрутите вниз что-бы увидеть продолжение...
 section.background
   .content-wrapper
-    p.content-title Cras lacinia non eros nec semper.
-    p.content-subtitle Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Cras ut massa mattis nibh semper pretium.
+    p.content-title = @restaurant.home_title_2
+    p.content-subtitle = @restaurant.home_description_2
 section.background
   .content-wrapper
-    p.content-title Etiam consequat lectus.
-    p.content-subtitle Nullam tristique urna sed tellus ornare congue. Etiam vitae erat at nibh aliquam dapibus.
+    p.content-title = @restaurant.home_title_3
+    p.content-subtitle = @restaurant.home_description_3
