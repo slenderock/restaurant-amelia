@@ -1,5 +1,5 @@
 class ReserveController < ApplicationController
   def show
-    @client = Client.find(params[:id])
+    @resource = Reserve.find(params[:id])
   end
 end
