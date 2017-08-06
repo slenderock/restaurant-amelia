@@ -58,6 +58,7 @@ namespace :deploy do
   #   end
   # end
 
+
   desc 'Initial Deploy'
   task :initial do
     on roles(:app) do
@@ -73,10 +74,27 @@ namespace :deploy do
     end
   end
 
+
   # before :starting,     :check_revision
   after  :finishing,    :compile_assets
   after  :finishing,    :cleanup
   after  :finishing,    :restart
+end
+
+namespace :bot do
+  desc 'Restart application'
+  task :start do
+    on roles(:app) do
+      execute('cd ~/apps/amelia/current && (setsid bundle exec rake bot:start RAILS_ENV=production)')
+    end
+  end
+
+  desc 'Kill rake bot:start'
+  task :stop do
+    on roles(:app) do
+      execute('pkill -f rake')
+    end
+  end
 end
 
 # ps aux | grep puma    # Get puma pid
