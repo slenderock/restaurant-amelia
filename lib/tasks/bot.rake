@@ -6,9 +6,7 @@ namespace :bot do
     module TelegramBotService
       class << self
         def run
-          @restaurant ||= Restaurant.load
-
-          Telegram::Bot::Client.run(@restaurant.api_token) do |bot|
+          Telegram::Bot::Client.run(Restaurant::DETAILS[:api_token]) do |bot|
             bot.listen { |message| perform(bot, message) }
           end
         end
@@ -25,7 +23,7 @@ namespace :bot do
           if disagree?(message.text)
             bot.api.send_message(
               chat_id: message.chat.id,
-              text: "Окей, пиши если передумаешь. А пока можешь посетить наш сайт #{ @restaurant.site }"
+              text: "Окей, пиши если передумаешь.А пока можешь посетить наш сайт #{Restaurant::DETAILS[:site]}"
             )
             return
           end
@@ -36,7 +34,7 @@ namespace :bot do
           end
 
           if goodbye?(message.text)
-            bot.api.send_message(chat_id: message.chat.id, text: "Увидимся, #{message.from.first_name}")
+            bot.api.send_message(chat_id: message.chat.id, text: "Увидимся , #{message.from.first_name}")
             return
           end
 
@@ -50,19 +48,19 @@ namespace :bot do
         end
 
         def disagree?(message)
-          %w(нет).include? message.downcase
+          %w(Нет нет).include? message
         end
 
         def agree?(message)
-          %w(да).include? message.downcase
+          %w(да Да).include? message
         end
 
         def greetings?(message)
-          %w(привет).include? message.downcase
+          %w(Привет привет).include? message
         end
 
         def goodbye?(message)
-          %w(пока прощай).include? message.downcase
+          %w(Пока пока Прощай прощай).include? message
         end
       end
     end
