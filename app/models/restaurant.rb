@@ -1,9 +1,24 @@
 class Restaurant
   include Mongoid::Document
 
-  DETAILS = {
-    site: 'http://restaurant-amelia.ml',
-    api_token: ENV['TELEGRAM_API_KEY'],
-    table_size: 8
-  }.freeze
+  field :title, type: String
+  field :site, type: String
+  field :meta_description, type: String
+  field :address, type: String
+  field :api_token, type: String
+  field :table_size, type: Integer
+  field :table_count, type: Integer
+  field :home_title_2, type: String
+  field :home_description_2, type: String
+  field :home_title_3, type: String
+  field :home_description_3, type: String
+
+  # Singleton object is required
+  before_create 'self.class.destroy_all'
+
+  def self.load
+    first || (new.save; return self)
+  end
+  # end of singleton
+
 end

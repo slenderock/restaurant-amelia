@@ -1,0 +1,31 @@
+.reserve-info
+  div
+    strong Заказ на имя:
+    = " #{@resource.user.name if @resource.user.present?}"
+  div
+    strong Дата:
+    = " #{@resource.date}"
+  div
+    strong Время:
+    = " #{@resource.time}"
+  div
+    strong Количество гостей:
+    = " #{@resource.guests}"
+.reserve-actions
+  = link_to 'Оставить отзыв', '#', class: 'link-standart'
+  = link_to 'Отменить заказ', '#', class: 'link-error'
+.reserve-about
+  .about-us
+    h3.title О нас
+    p.description-text
+      | Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      | Proin dapibus egestas justo, vel congue elit auctor sed.
+      | Nulla in enim ut felis commodo placerat. Donec interdum venenatis nibh at tristique.
+      | Aenean non blandit diam. Nullam mollis nunc a justo auctor tempus. Cras feugiat eros id elit tempus lobortis.
+      | Cras commodo dui turpis, vestibulum ornare neque tincidunt sed.
+      | Nam diam leo, ornare ac dui sit amet, aliquet blandit dui.
+      | Nulla in enim ut felis commodo placerat. Donec interdum venenatis nibh at tristique.
+
+  .about-map
+    h3.title Где нас найти
+    .adress-image = image_tag :map
