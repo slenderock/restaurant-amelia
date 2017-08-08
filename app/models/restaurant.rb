@@ -20,5 +20,4 @@ class Restaurant
     first || (new.save; return self)
   end
   # end of singleton
-
 end

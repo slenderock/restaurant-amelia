@@ -58,7 +58,6 @@ namespace :deploy do
   #   end
   # end
 
-
   desc 'Initial Deploy'
   task :initial do
     on roles(:app) do
@@ -73,7 +72,6 @@ namespace :deploy do
       invoke 'puma:restart'
     end
   end
-
 
   # before :starting,     :check_revision
   after  :finishing,    :compile_assets

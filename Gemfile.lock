@@ -1,3 +1,10 @@
+GIT
+  remote: https://github.com/chocoken517/mongoid-enum.git
+  revision: d191fa203942ef73e67d04078ec3eab96c15bd7d
+  specs:
+    mongoid-enum (0.4.0)
+      mongoid (~> 6.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -283,6 +290,7 @@ DEPENDENCIES
   kaminari-mongoid (~> 1.0, >= 1.0.1)
   listen (~> 3.0.5)
   mongoid (~> 6.1, >= 6.1.1)
+  mongoid-enum!
   pry
   puma (~> 3.0)
   rails (~> 5.0.4)
