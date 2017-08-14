@@ -1,10 +1,3 @@
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the rails db:seed command (or created alongside the database with db:setup).
-#
-# Examples:
-#
-#   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
-#   Character.create(name: 'Luke', movie: movies.first)
 restaurant_title = 'Amelia'
 desc = "
   Ресторан #{restaurant_title} вобрал в себя лучшие традиции европейской, испанской и средиземноморской кухни.
@@ -13,7 +6,7 @@ desc = "
   Секрет популярности прост - побывав здесь однажды и ощутив радушие и гостеприимство, теплый прием и
   заботливое обслуживание, гости непременно возвращаются вновь и рекомендуют  #{restaurant_title} своим друзьям.
 "
-lorem ='
+lorem = '
   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
   magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
   consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
@@ -24,7 +17,7 @@ Restaurant.load.update(
   site: 'http://restaurant-amelia.ml',
   meta_description: desc,
   address: 'Черкассы',
-  api_token: ENV['TELEGRAM_API_KEY'],
+  api_token: Rails.application.secrets.bot_token,
   table_size: 8,
   table_count: 20,
   home_title_2: "В '#{restaurant_title}' уютно",
