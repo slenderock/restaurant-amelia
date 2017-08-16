@@ -5,4 +5,5 @@ class Reserve
 
   field :datetime, type: Time
   field :guests, type: Integer
+  field :paid, type: Boolean, default: false
 end
