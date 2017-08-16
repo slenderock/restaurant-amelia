@@ -18,11 +18,29 @@ Restaurant.load.update(
   reserve_price: '5',
   meta_description: desc,
   address: 'Черкассы',
-  api_token: Rails.application.secrets.bot_token,
+  api_token: Rails.application.secrets[:bot_token],
   table_size: 8,
   table_count: 20,
   home_title_2: "В '#{restaurant_title}' уютно",
   home_description_2: desc,
   home_title_3: 'Lorem ipsum',
   home_description_3: lorem
+)
+User.create(
+  name: 'User',
+  phone: '+380987654321',
+  locale: :russian
+)
+
+Reserve.create(
+  user_id: User.first.id,
+  datetime: Time.now,
+  guests: 3,
+  paid: false
+)
+Reserve.create(
+  user_id: User.first.id,
+  datetime: Time.now,
+  guests: 3,
+  paid: true
 )
