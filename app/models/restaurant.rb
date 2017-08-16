@@ -3,6 +3,7 @@ class Restaurant
 
   field :title, type: String
   field :site, type: String
+  field :reserve_price, type: Integer
   field :meta_description, type: String
   field :address, type: String
   field :api_token, type: String

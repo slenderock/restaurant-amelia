@@ -15,6 +15,7 @@ lorem = '
 Restaurant.load.update(
   title: restaurant_title,
   site: 'http://restaurant-amelia.ml',
+  reserve_price: '5',
   meta_description: desc,
   address: 'Черкассы',
   api_token: Rails.application.secrets.bot_token,
