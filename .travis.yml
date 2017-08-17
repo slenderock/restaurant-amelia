@@ -1,0 +1,10 @@
+sudo: required
+dist: trusty
+language: ruby
+rvm: 2.4.1
+
+before_script:
+  - gem install rubocop
+
+script:
+  - bundle exec rubocop

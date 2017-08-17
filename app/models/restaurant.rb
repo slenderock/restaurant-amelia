@@ -18,7 +18,12 @@ class Restaurant
   before_create 'self.class.destroy_all'
 
   def self.load
-    first || (new.save; return self)
+    unless first
+      new.save
+      return self
+    end
+
+    first
   end
   # end of singleton
 end

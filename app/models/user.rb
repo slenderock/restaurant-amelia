@@ -6,8 +6,7 @@ class User
   field :phone, type: String
   field :locale, type: Integer, default: 0
 
-  enum :locale, %i(russian english)
-
+  enum :locale, %i[russian english]
 
   has_many :reserves, class_name: 'Reserve', inverse_of: :user
 end

@@ -20,6 +20,7 @@ namespace :bot do
             if message.data == 'touch'
               bot.api.send_message(chat_id: message.from.id, text: "Don't touch me!")
             end
+
             # when Telegram::Bot::Types::InlineQuery
             #   results = [
             #     [1, 'First article', 'Very interesting text goes here.'],
@@ -28,30 +29,38 @@ namespace :bot do
             #     Telegram::Bot::Types::InlineQueryResultArticle.new(
             #       id: arr[0],
             #       title: arr[1],
-            #       input_message_content: Telegram::Bot::Types::InputTextMessageContent.new(message_text: arr[2])
+            #       input_message_content:
+            #         Telegram::Bot::Types::InputTextMessageContent.new(message_text: arr[2])
             #     )
             #   end
 
             bot.api.answer_inline_query(inline_query_id: message.id, results: results)
           when Telegram::Bot::Types::Message
+            return unless message.text.present?
+
             if message.text == '/start'
               question = 'Pick a language'
               # See more: https://core.telegram.org/bots/api#replykeyboardmarkup
               answers =
-                Telegram::Bot::Types::ReplyKeyboardMarkup
-                .new(keyboard: [%w(Русский Украинский), %w(Английский)], one_time_keyboard: true)
+                Telegram::Bot::Types::ReplyKeyboardMarkup.new(
+                  keyboard: [%w[Русский Украинский], %w[Английский]],
+                  one_time_keyboard: true
+                )
               bot.api.send_message(chat_id: message.chat.id, text: question, reply_markup: answers)
+              return
             end
 
             if message.text == '/stop'
               # See more: https://core.telegram.org/bots/api#replykeyboardremove
               kb = Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
               bot.api.send_message(chat_id: message.chat.id, text: 'Sorry to see you go :(', reply_markup: kb)
+              return
             end
 
             if message.text == '/help'
               kb = Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
               bot.api.send_message(chat_id: message.chat.id, text: 'List of commands', reply_markup: kb)
+              return
             end
 
             if message.text == '/loc'
@@ -61,6 +70,7 @@ namespace :bot do
               ]
               markup = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: kb)
               bot.api.send_message(chat_id: message.chat.id, text: 'Hey!', reply_markup: markup)
+              return
             end
 
             if greetings?(message.text)
@@ -80,30 +90,26 @@ namespace :bot do
             end
 
             if agree?(message.text)
-              bot.api.send_message(chat_id: message.chat.id, text: 'На какое число вы хотите заказать столик?')
+              bot.api.send_message(
+                chat_id: message.chat.id,
+                text: 'На какое число вы хотите заказать столик?'
+              )
               return
             end
 
             if goodbye?(message.text)
-              bot.api.send_message(chat_id: message.chat.id, text: "Увидимся, #{message.from.first_name}")
+              bot.api.send_message(
+                chat_id: message.chat.id,
+                text: "Увидимся, #{message.from.first_name}"
+              )
               return
             end
 
-            if begin
-                  message.text.to_date
-                rescue
-                  false
-                end
-              bot.api.send_message(chat_id: message.chat.id, text: "Выбрана дата: #{message.text.to_time}")
-              return
-            end
-
-            if begin
-                  message.text.to_time
-                rescue
-                  false
-                end
-              bot.api.send_message(chat_id: message.chat.id, text: "Выбрано время: #{message.text.to_time}")
+            if date?(message.text)
+              bot.api.send_message(
+                chat_id: message.chat.id,
+                text: "Выбрана дата: #{message.text.to_time}"
+              )
               return
             end
 
@@ -112,25 +118,32 @@ namespace :bot do
 
             # когда(время дата), сколько людей, имя, телефон
             # else
-            #   bot.api.send_message(chat_id: message.chat.id, text: 'Я не понимаю тебя. Отвечай Да или Нет')
+            #   bot.api.send_message(
+            #     chat_id: message.chat.id,
+            #     text: 'Я не понимаю тебя. Отвечай Да или Нет'
+            #   )
             # end
           end
         end
 
         def disagree?(message)
-          %w(нет).include? message.downcase
+          %w[нет].include? message.downcase
         end
 
         def agree?(message)
-          %w(да).include? message.downcase
+          %w[да].include? message.downcase
         end
 
         def greetings?(message)
-          %w(привет).include? message.downcase
+          %w[привет].include? message.downcase
         end
 
         def goodbye?(message)
-          %w(пока прощай).include? message.downcase
+          %w[пока прощай].include? message.downcase
+        end
+
+        def date?(message)
+          message.to_date
         end
       end
     end

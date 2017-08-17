@@ -19,6 +19,12 @@ Metrics/BlockLength:
 Documentation:
   Enabled: false
 
+Metrics/MethodLength:
+  Enabled: false
+
+Style/AsciiComments:
+  Enabled: false
+
 Style/FrozenStringLiteralComment:
   Enabled: false
 
@@ -34,11 +40,17 @@ Style/ModuleFunction:
 Style/Encoding:
   Enabled: false
 
-Documentation:
-  Enabled: false
-
-Metrics/MethodLength:
-  Enabled: false
-
 Metrics/LineLength:
-  Max: 105
+  Max: 120
+
+Metrics/BlockLength:
+  Max: 120
+
+Metrics/AbcSize:
+  Max: 120
+
+Metrics/CyclomaticComplexity:
+  Max: 15
+
+Metrics/PerceivedComplexity:
+  Max: 15

@@ -24,6 +24,7 @@ group :development do
   gem 'awesome_print', '~> 1.7'
   gem 'better_errors', '~> 2.1', '>= 2.1.1'
   gem 'pry'
+  gem 'rubocop'
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
   gem 'web-console', '>= 3.3.0'
@@ -37,4 +38,4 @@ group :development do
   gem 'capistrano3-puma',   '1.2.1', require: false
 end
 
-gem 'tzinfo-data', platforms: %i(mingw mswin x64_mingw jruby)
+gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
