@@ -8,7 +8,7 @@
         label Заказ на имя:
         h3 = @resource.user.name
         br
-        - if @resource.paid
+        - if @resource.verified
           p Бронь снимается через 10 минут после указаного времени
         - else
           p Бронь снимается за 10 минут до указаного времени
@@ -22,7 +22,7 @@
       #ticket-price
         label Стоимость бронирования
         span#total-price = @restaurant.reserve_price
-      - if @resource.paid
+      - if @resource.verified
         button href="#" Отменить заказ
       - else
         button style="background-color: rgb(57, 200, 129)" href="#" Оплатить заказ

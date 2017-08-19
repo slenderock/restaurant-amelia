@@ -8,6 +8,6 @@ class User
   has_many :reserves, class_name: 'Reserve', inverse_of: :user
 
   def load_reserve
-    reserves.last || reserves.create
+    reserves.not_verified.last || reserves.create
   end
 end

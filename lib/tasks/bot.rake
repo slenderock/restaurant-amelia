@@ -14,8 +14,7 @@ namespace :bot do
         end
 
         def perform(bot, message)
-          return unless message.text.present?
-          p message
+          # Variables
           current_user ||= User.find_or_create_by(
             chat_id: message.from.id,
             name: ''
@@ -39,7 +38,7 @@ namespace :bot do
                 request_contact: true
               )
             end
-
+            keyboard_actions = ['Подтвердить заказ', 'Отменить заказ'] if keyboard_actions.empty?
             under_keyboard_buttons =
               Telegram::Bot::Types::ReplyKeyboardMarkup.new(
                 keyboard: [keyboard_actions],
@@ -51,6 +50,19 @@ namespace :bot do
               reply_markup: under_keyboard_buttons
             )
           end
+          # end of variables
+
+          # share phone number
+          unless message.contact.nil?
+            current_user.update_attributes(phone: message.contact.phone_number)
+            send_single_message.call("Номер #{current_user.phone} будет использоватся для проверки заказа")
+
+            render_keyboard
+          end
+          # end of share phone number
+
+          # messages
+          return unless message.text.present?
 
           case message.text
           when '/stop'
@@ -111,7 +123,7 @@ namespace :bot do
               current_reserve.update_attributes(datetime: datetime)
               send_single_message.call datetime
             else
-              p message
+              puts message
               send_single_message.call 'Я не понимаю тебя. Попробуй использовать кнопочки))'
             end
 
