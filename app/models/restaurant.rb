@@ -13,6 +13,7 @@ class Restaurant
   field :home_description_2, type: String
   field :home_title_3, type: String
   field :home_description_3, type: String
+  field :manager_phone, type: String
 
   # Singleton object is required
   before_create 'self.class.destroy_all'

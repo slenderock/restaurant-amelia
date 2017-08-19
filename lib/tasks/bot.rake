@@ -98,7 +98,7 @@ namespace :bot do
             under_keyboard_buttons =
               Telegram::Bot::Types::ReplyKeyboardMarkup.new(
                 keyboard: [(1..@restaurant.table_size).to_a.map(&:to_s)],
-                one_time_keyboard: true
+                one_time_keyboard: false
               )
             bot.api.send_message(
               chat_id: message.chat.id,
@@ -125,6 +125,8 @@ namespace :bot do
 
             bot.api.send_message(chat_id: message.chat.id, text: text, reply_markup: markup)
 
+            send_single_message.call 'Я готов принять ещё один заказ.'
+
             render_keyboard.call
           when 'Отменить заказ'
             @current_reserve.delete
@@ -137,18 +139,20 @@ namespace :bot do
             # actions
             case @current_user.action
             when 'choose_table_size'
-              return if (message.text.to_i.zero? rescue true)
+              if (message.text.to_i > 1 rescue false) && message.text.to_i <= @restaurant.table_size
+                @current_reserve.update_attributes(guests: message.text.to_i)
 
-              @current_reserve.update_attributes(guests: message.text.to_i)
+                bot.api.send_message(
+                  chat_id: message.chat.id,
+                  text:
+                    "Выбран столик для #{@current_reserve.guests} гост#{@current_reserve.guests == 1 ? 'я' : 'ей'}"
+                )
 
-              bot.api.send_message(
-                chat_id: message.chat.id,
-                text:
-                  "Выбран столик для #{@current_reserve.guests} гост#{@current_reserve.guests == 1 ? 'я' : 'ей'}"
-              )
-
-              @current_user.update_attributes action: 'choosing'
-              render_keyboard.call
+                @current_user.update_attributes action: 'choosing'
+                render_keyboard.call
+              else
+                send_single_message.call "Пожайлуста выберите из ниже представленых вариантов или обратитесь к администации #{@restaurant.manager_phone}"
+              end
             when 'choose_datetime'
               # return if (message.text.to_time.nil? rescue true)
               if message.text =~ /\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}/ && message.text.to_time > DateTime.now
