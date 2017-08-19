@@ -148,20 +148,27 @@ namespace :bot do
               )
 
               @current_user.update_attributes action: 'choosing'
+              render_keyboard.call
             when 'choose_datetime'
-              return if (message.text.to_time.nil? rescue true)
+              # return if (message.text.to_time.nil? rescue true)
+              if message.text =~ /\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}/ && message.text.to_time > DateTime.now
 
-              datetime = message.text.to_time.strftime('%d.%m.%Y %H:00')
-              @current_reserve.update_attributes(datetime: datetime)
-              send_single_message.call "Мы ждем Вас #{datetime}"
+                datetime = message.text.to_time.strftime('%d.%m.%Y %H:00')
+                @current_reserve.update_attributes(datetime: datetime)
+                send_single_message.call "Мы ждем Вас #{datetime}"
 
-              @current_user.update_attributes action: 'choosing'
+                @current_user.update_attributes action: 'choosing'
+                render_keyboard.call
+              elsif message.text =~ /\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}/ && message.text.to_time < DateTime.now
+                send_single_message.call 'Машину времени еще не изобрели). Попробуйте еще раз'
+              else
+                send_single_message.call 'Неверный формат даты. Попробуйте еще раз'
+              end
             else
               puts message
               send_single_message.call 'Я не понимаю тебя. Попробуй использовать кнопочки))'
+              render_keyboard.call
             end
-
-            render_keyboard.call
           end
         end
       end
