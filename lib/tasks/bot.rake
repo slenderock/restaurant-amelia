@@ -111,7 +111,14 @@ namespace :bot do
           when 'Подтвердить заказ'
             text = 'Ваш заказ подтвержден. Вы можете увидеть страницу заказа по ссылке указаной ниже'
 
-            markup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: [Telegram::Bot::Types::InlineKeyboardButton.new(text: 'Ваш заказ', url: "http://restaurant-amelia.ml/reserve/#{@current_reserve.id}")])
+            markup = Telegram::Bot::Types::InlineKeyboardMarkup.new(
+              inline_keyboard: [
+                Telegram::Bot::Types::InlineKeyboardButton.new(
+                  text: 'Ваш заказ',
+                  url: "#{@restaurant.site}/reserve/#{@current_reserve.id}"
+                )
+              ]
+            )
 
             @current_reserve.confirm!
             @current_reserve = @current_user.reserves.create
@@ -139,18 +146,21 @@ namespace :bot do
                 text:
                   "Выбран столик для #{@current_reserve.guests} гост#{@current_reserve.guests == 1 ? 'я' : 'ей'}"
               )
+
+              @current_user.update_attributes action: 'choosing'
             when 'choose_datetime'
               return if (message.text.to_time.nil? rescue true)
 
               datetime = message.text.to_time.strftime('%d.%m.%Y %H:00')
               @current_reserve.update_attributes(datetime: datetime)
               send_single_message.call "Мы ждем Вас #{datetime}"
+
+              @current_user.update_attributes action: 'choosing'
             else
               puts message
               send_single_message.call 'Я не понимаю тебя. Попробуй использовать кнопочки))'
             end
 
-            @current_user.update_attributes(action: 'choosing')
             render_keyboard.call
           end
         end
