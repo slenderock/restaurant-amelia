@@ -15,8 +15,11 @@ namespace :bot do
 
         def perform(bot, message)
           return unless message.text.present?
-
-          current_user ||= User.find_or_create_by(chat_id: message.from.id)
+          p message
+          current_user ||= User.find_or_create_by(
+            chat_id: message.from.id,
+            name: ''
+          )
           current_reserve ||= current_user.load_reserve
           send_single_message = proc do |text|
             bot.api.send_message(
