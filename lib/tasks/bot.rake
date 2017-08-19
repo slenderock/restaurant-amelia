@@ -5,146 +5,105 @@ namespace :bot do
 
     module TelegramBotService
       class << self
-        def run
-          @restaurant ||= Restaurant.load
+      def run
+        @restaurant ||= Restaurant.load
 
-          Telegram::Bot::Client.run(@restaurant.api_token) do |bot|
-            bot.listen { |message| perform(bot, message) }
+        Telegram::Bot::Client.run(@restaurant.api_token) do |bot|
+          bot.listen { |message| perform(bot, message) }
+        end
+      end
+
+      def perform(bot, message)
+        return unless message.text.present?
+
+        user ||= User.find_or_create_by(chat_id: message.from.id)
+        current_reserve = user.load_reserve
+
+        render_keyboard = proc do
+          description = 'Нажимай кнопки внизу'
+          keyboard_actions = []
+          keyboard_actions << 'Количество гостей' unless current_reserve.guests.present?
+          keyboard_actions << 'Дата и время' unless current_reserve.datetime.present?
+
+          unless user.phone.present?
+            keyboard_actions << Telegram::Bot::Types::KeyboardButton.new(
+              text: 'Отправить номер телефона',
+              request_contact: true
+            )
           end
+
+          under_keyboard_buttons =
+            Telegram::Bot::Types::ReplyKeyboardMarkup.new(
+              keyboard: [keyboard_actions],
+              one_time_keyboard: false
+            )
+          bot.api.send_message(
+            chat_id: message.chat.id,
+            text: description,
+            reply_markup: under_keyboard_buttons
+          )
         end
 
-        def perform(bot, message)
-          case message
-          when Telegram::Bot::Types::CallbackQuery
-            # Here you can handle your callbacks from inline buttons
-            if message.data == 'touch'
-              bot.api.send_message(chat_id: message.from.id, text: "Don't touch me!")
-            end
+        case message.text
+          when '/stop'
+            kb = Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
+            bot.api.send_message(
+              chat_id: message.chat.id,
+              text: 'Sorry to see you go :(',
+              reply_markup: kb
+            )
+          when '/help'
+            kb = Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
+            bot.api.send_message(
+              chat_id: message.chat.id,
+              text: 'List of commands',
+              reply_markup: kb
+            )
+          when '/start'
 
-            # when Telegram::Bot::Types::InlineQuery
-            #   results = [
-            #     [1, 'First article', 'Very interesting text goes here.'],
-            #     [2, 'Second article', 'Another interesting text here.']
-            #   ].map do |arr|
-            #     Telegram::Bot::Types::InlineQueryResultArticle.new(
-            #       id: arr[0],
-            #       title: arr[1],
-            #       input_message_content:
-            #         Telegram::Bot::Types::InputTextMessageContent.new(message_text: arr[2])
-            #     )
-            #   end
+            bot.api.send_message(
+              chat_id: message.chat.id,
+              text: 'Привет. Я бот для заказа столика в ресторане. Я могу помочь тебе заказать столик. Ecли хочешь сделать все быстро - используй кнопочки)'
+            )
+            render_keyboard.call
+          when 'Количество гостей'
+            user.update_attributes(action: 'chose_table_size')
 
-            bot.api.answer_inline_query(inline_query_id: message.id, results: results)
-          when Telegram::Bot::Types::Message
-            return unless message.text.present?
+            description = 'Выберите количество гостей'
+            under_keyboard_buttons =
+              Telegram::Bot::Types::ReplyKeyboardMarkup.new(
+                keyboard: [
+                  (1..@restaurant.table_size).to_a.map(&:to_s)
+                ],
+                one_time_keyboard: true
+              )
+            bot.api.send_message(
+              chat_id: message.chat.id,
+              text: description,
+              reply_markup: under_keyboard_buttons
+            )
+          else
+            # actions
+            case user.action
+              when 'chose_table_size'
+                return if message.text.to_i.zero?
 
-            if message.text == '/start'
-              question = 'Pick a language'
-              # See more: https://core.telegram.org/bots/api#replykeyboardmarkup
-              answers =
-                Telegram::Bot::Types::ReplyKeyboardMarkup.new(
-                  keyboard: [%w[Русский Украинский], %w[Английский]],
-                  one_time_keyboard: true
+                current_reserve.update_attributes(guests: message.text.to_i)
+
+                bot.api.send_message(
+                  chat_id: message.chat.id,
+                  text:
+                    "Выбран столик для #{current_reserve.guests} гост#{current_reserve.guests == 1 ? 'я' : 'ей'}"
                 )
-              bot.api.send_message(chat_id: message.chat.id, text: question, reply_markup: answers)
-              return
+                render_keyboard
+              else
+                bot.api.send_message(
+                  chat_id: message.chat.id,
+                  text: 'Я не понимаю тебя. Попробуй использовать кнопочки))'
+                )
             end
-
-            if message.text == '/stop'
-              # See more: https://core.telegram.org/bots/api#replykeyboardremove
-              kb = Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
-              bot.api.send_message(chat_id: message.chat.id, text: 'Sorry to see you go :(', reply_markup: kb)
-              return
-            end
-
-            if message.text == '/help'
-              kb = Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
-              bot.api.send_message(chat_id: message.chat.id, text: 'List of commands', reply_markup: kb)
-              return
-            end
-
-            if message.text == '/loc'
-              kb = [
-                Telegram::Bot::Types::KeyboardButton.new(text: 'Give me your phone number', request_contact: true),
-                Telegram::Bot::Types::KeyboardButton.new(text: 'Show me your location', request_location: true)
-              ]
-              markup = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: kb)
-              bot.api.send_message(chat_id: message.chat.id, text: 'Hey!', reply_markup: markup)
-              return
-            end
-
-            if greetings?(message.text)
-              bot.api.send_message(
-                chat_id: message.chat.id,
-                text: "Здравствуйте, #{message.from.first_name}. Хотите заказать столик в ресторане?"
-              )
-              return
-            end
-
-            if disagree?(message.text)
-              bot.api.send_message(
-                chat_id: message.chat.id,
-                text: "Окей, пиши если передумаешь. А пока можешь посетить наш сайт #{@restaurant.site}"
-              )
-              return
-            end
-
-            if agree?(message.text)
-              bot.api.send_message(
-                chat_id: message.chat.id,
-                text: 'На какое число вы хотите заказать столик?'
-              )
-              return
-            end
-
-            if goodbye?(message.text)
-              bot.api.send_message(
-                chat_id: message.chat.id,
-                text: "Увидимся, #{message.from.first_name}"
-              )
-              return
-            end
-
-            if date?(message.text)
-              bot.api.send_message(
-                chat_id: message.chat.id,
-                text: "Выбрана дата: #{message.text.to_time}"
-              )
-              return
-            end
-
-            # else
-            bot.api.send_message(chat_id: message.chat.id, text: 'Я не понимаю тебя')
-
-            # когда(время дата), сколько людей, имя, телефон
-            # else
-            #   bot.api.send_message(
-            #     chat_id: message.chat.id,
-            #     text: 'Я не понимаю тебя. Отвечай Да или Нет'
-            #   )
-            # end
-          end
         end
-
-        def disagree?(message)
-          %w[нет].include? message.downcase
-        end
-
-        def agree?(message)
-          %w[да].include? message.downcase
-        end
-
-        def greetings?(message)
-          %w[привет].include? message.downcase
-        end
-
-        def goodbye?(message)
-          %w[пока прощай].include? message.downcase
-        end
-
-        def date?(message)
-          message.to_date
-        end
+      end
       end
     end
 

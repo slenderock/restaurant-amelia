@@ -1,12 +1,13 @@
 class User
   include Mongoid::Document
-  include Mongoid::Enum
 
   field :name, type: String
   field :phone, type: String
-  field :locale, type: Integer, default: 0
-
-  enum :locale, %i[russian english]
-
+  field :chat_id, type: String
+  field :action, type: String
   has_many :reserves, class_name: 'Reserve', inverse_of: :user
+
+  def load_reserve
+    reserves.last || reserves.create
+  end
 end
