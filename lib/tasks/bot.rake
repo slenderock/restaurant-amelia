@@ -15,11 +15,11 @@ namespace :bot do
 
         def perform(bot, message)
           # Variables
-          current_user ||= User.find_or_create_by(
+          @current_user = User.find_or_create_by(
             chat_id: message.from.id,
-            name: ''
           )
-          current_reserve ||= current_user.load_reserve
+          @current_reserve = @current_user.load_reserve
+
           send_single_message = proc do |text|
             bot.api.send_message(
               chat_id: message.chat.id,
@@ -27,17 +27,20 @@ namespace :bot do
             )
           end
           render_keyboard = proc do
+            @current_reserve ||= @current_user.load_reserve
+
             description = 'Нажимай кнопки внизу'
             keyboard_actions = []
-            keyboard_actions << 'Количество гостей' if current_reserve.guests.nil?
-            keyboard_actions << 'Дата и время' if current_reserve.datetime.nil?
+            keyboard_actions << 'Количество гостей' if @current_reserve.guests.nil?
+            keyboard_actions << 'Дата и время' if @current_reserve.datetime.nil?
 
-            if current_user.phone.nil?
+            if @current_user.phone.nil?
               keyboard_actions << Telegram::Bot::Types::KeyboardButton.new(
                 text: 'Отправить номер телефона',
                 request_contact: true
               )
             end
+
             keyboard_actions = ['Подтвердить заказ', 'Отменить заказ'] if keyboard_actions.empty?
             under_keyboard_buttons =
               Telegram::Bot::Types::ReplyKeyboardMarkup.new(
@@ -54,10 +57,14 @@ namespace :bot do
 
           # share phone number
           unless message.contact.nil?
-            current_user.update_attributes(phone: message.contact.phone_number)
-            send_single_message.call("Номер #{current_user.phone} будет использоватся для проверки заказа")
 
-            render_keyboard
+            @current_user.update_attributes(
+              phone: message.contact.phone_number,
+              name: message.from.first_name
+            )
+            send_single_message.call("Номер #{@current_user.phone} будет использоватся для проверки заказа")
+
+            render_keyboard.call
           end
           # end of share phone number
 
@@ -85,14 +92,12 @@ namespace :bot do
             )
             render_keyboard.call
           when 'Количество гостей'
-            current_user.update_attributes(action: 'choose_table_size')
+            @current_user.update_attributes(action: 'choose_table_size')
 
             description = 'Выберите количество гостей'
             under_keyboard_buttons =
               Telegram::Bot::Types::ReplyKeyboardMarkup.new(
-                keyboard: [
-                  (1..@restaurant.table_size).to_a.map(&:to_s)
-                ],
+                keyboard: [(1..@restaurant.table_size).to_a.map(&:to_s)],
                 one_time_keyboard: true
               )
             bot.api.send_message(
@@ -101,33 +106,51 @@ namespace :bot do
               reply_markup: under_keyboard_buttons
             )
           when 'Дата и время'
-            current_user.update_attributes(action: 'choose_datetime')
+            @current_user.update_attributes(action: 'choose_datetime')
             send_single_message.call("Теперь введите дату и время в формате(#{DateTime.now.strftime('%d.%m.%Y %H:00')})")
+          when 'Подтвердить заказ'
+            text = 'Ваш заказ подтвержден. Вы можете увидеть страницу заказа по ссылке указаной ниже'
+
+            markup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: [Telegram::Bot::Types::InlineKeyboardButton.new(text: 'Ваш заказ', url: "http://restaurant-amelia.ml/reserve/#{@current_reserve.id}")])
+
+            @current_reserve.confirm!
+            @current_reserve = @current_user.reserves.create
+
+            bot.api.send_message(chat_id: message.chat.id, text: text, reply_markup: markup)
+
+            render_keyboard.call
+          when 'Отменить заказ'
+            @current_reserve.delete
+            @current_reserve = @current_user.reserves.create
+
+            send_single_message.call('Не очень то и хотелось. Можете попробовать еще раз)')
+
+            render_keyboard.call
           else
             # actions
-            case current_user.action
+            case @current_user.action
             when 'choose_table_size'
-              return if message.text.to_i.zero?
+              return if (message.text.to_i.zero? rescue true)
 
-              current_reserve.update_attributes(guests: message.text.to_i)
+              @current_reserve.update_attributes(guests: message.text.to_i)
 
               bot.api.send_message(
                 chat_id: message.chat.id,
                 text:
-                  "Выбран столик для #{current_reserve.guests} гост#{current_reserve.guests == 1 ? 'я' : 'ей'}"
+                  "Выбран столик для #{@current_reserve.guests} гост#{@current_reserve.guests == 1 ? 'я' : 'ей'}"
               )
             when 'choose_datetime'
-              return if message.text.to_time.nil?
+              return if (message.text.to_time.nil? rescue true)
 
               datetime = message.text.to_time.strftime('%d.%m.%Y %H:00')
-              current_reserve.update_attributes(datetime: datetime)
-              send_single_message.call datetime
+              @current_reserve.update_attributes(datetime: datetime)
+              send_single_message.call "Мы ждем Вас #{datetime}"
             else
               puts message
               send_single_message.call 'Я не понимаю тебя. Попробуй использовать кнопочки))'
             end
 
-            current_user.update_attributes(action: 'choosing')
+            @current_user.update_attributes(action: 'choosing')
             render_keyboard.call
           end
         end
