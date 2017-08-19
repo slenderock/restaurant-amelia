@@ -15,4 +15,8 @@ class Reserve
   def confirm!
     update_attributes(verified: true)
   end
+
+  def completed?
+    datetime.present? && guests.present? && user.phone.present?
+  end
 end

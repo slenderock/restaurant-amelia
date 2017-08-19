@@ -109,6 +109,8 @@ namespace :bot do
             @current_user.update_attributes(action: 'choose_datetime')
             send_single_message.call("Теперь введите дату и время в формате(#{DateTime.now.strftime('%d.%m.%Y %H:00')})")
           when 'Подтвердить заказ'
+            return send_single_message.call 'Вы не можете подтвердить заказ пока не предоставили все данные. Используйте кнопки внизу' unless @current_reserve.completed?
+
             text = 'Ваш заказ подтвержден. Вы можете увидеть страницу заказа по ссылке указаной ниже'
 
             markup = Telegram::Bot::Types::InlineKeyboardMarkup.new(
@@ -155,8 +157,11 @@ namespace :bot do
               end
             when 'choose_datetime'
               # return if (message.text.to_time.nil? rescue true)
-              if message.text =~ /\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}/ && message.text.to_time > DateTime.now
+              if (!message.text.to_time rescue true)
+                return send_single_message.call 'Такой даты не существует! Попробуй еще раз'
+              end
 
+              if message.text =~ /\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}/ && message.text.to_time > DateTime.now
                 datetime = message.text.to_time.strftime('%d.%m.%Y %H:00')
                 @current_reserve.update_attributes(datetime: datetime)
                 send_single_message.call "Мы ждем Вас #{datetime}"
